@@ -55,54 +55,52 @@ class GalleryViewController: UIViewController, UICollectionViewDelegate, UIColle
         collectionView.reloadData()
     }
     
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden : Bool {
         return false
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return .lightContent
     }
     
     // MARK: UICollectionViewDelegate, UICollectionViewDataSource
 
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         
         let padding: CGFloat = 1
         let minimum: CGFloat = 78
 
         let itemsPerRow = floor(collectionView.frame.size.width / minimum)
         let width = (collectionView.frame.size.width - ((itemsPerRow - 1)*padding)) / itemsPerRow
-        return CGSizeMake(width, width)
+        return CGSize(width:width, height:width)
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ImageCell", forIndexPath: indexPath) as! ImageCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCell", for: indexPath as IndexPath) as! ImageCell
         let photo = allPhotos[indexPath.row]
         cell.imageView.image = (indexPath.row == selectedIndex && hideSelectedCell) ? nil : photo.image
         return cell
     }
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return allPhotos.count
     }
     
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         selectedIndex = indexPath.row
-        performSegueWithIdentifier("FullScreenSegue", sender: nil)
+        performSegue(withIdentifier: "FullScreenSegue", sender: nil)
     }
-    
-    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
         collectionView.collectionViewLayout.invalidateLayout()
     }
     
     // MARK: Segue Methods
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        let destination = segue.destinationViewController as! PhotoViewController
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destination = segue.destination as! PhotoViewController
         destination.transitioningDelegate = self
         destination.galleryDelegate = self
-        destination.setupWithPhotos(allPhotos, selectedPhotoIndex: selectedIndex!)
+        destination.setupWithPhotos(photos: allPhotos, selectedPhotoIndex: selectedIndex!)
     }
 }
 
@@ -124,9 +122,7 @@ protocol GalleryDelegate {
 extension GalleryViewController: UIViewControllerTransitioningDelegate {
     
     // 2: presentation controller
-    func animationControllerForPresentedController(presented: UIViewController,
-                                                   presentingController presenting: UIViewController,
-                                                                        sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         let photoViewController = presented as! PhotoViewController
         animationController.setupImageTransition( image: allPhotos[selectedIndex!].image,
                                                   fromDelegate: self,
@@ -134,8 +130,7 @@ extension GalleryViewController: UIViewControllerTransitioningDelegate {
         return animationController
     }
     
-    // 3: dismissing controller
-    func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         let photoViewController = dismissed as! PhotoViewController
         animationController.setupImageTransition( image: allPhotos[selectedIndex!].image,
                                                   fromDelegate: photoViewController,
@@ -162,9 +157,9 @@ extension GalleryViewController: ImageTransitionProtocol {
     
     // 3: return window frame of selected image
     func imageWindowFrame() -> CGRect{
-        let indexPath = NSIndexPath(forRow: selectedIndex!, inSection: 0)
-        let attributes = collectionView.layoutAttributesForItemAtIndexPath(indexPath)
+        let indexPath = IndexPath(row: selectedIndex!, section: 0)
+        let attributes = collectionView.layoutAttributesForItem(at: indexPath as IndexPath)
         let cellRect = attributes!.frame
-        return collectionView.convertRect(cellRect, toView: nil)
+        return collectionView.convert(cellRect, to: nil)
     }
 }

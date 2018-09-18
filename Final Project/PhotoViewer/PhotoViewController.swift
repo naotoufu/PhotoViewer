@@ -62,15 +62,15 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         scrollView.delegate = self
         
         // add colours
-        view.backgroundColor = UIColor.blackColor()
-        titleLabel.textColor = UIColor.whiteColor()
-        colourButton(exitButton)
-        colourButton(moreButton)
+        view.backgroundColor = UIColor.black
+        titleLabel.textColor = UIColor.white
+        colourButton(button: exitButton)
+        colourButton(button: moreButton)
         
         // add shadows
-        addShadowToView(exitButton)
-        addShadowToView(moreButton)
-        addShadowToView(titleLabel)
+        addShadowToView(view: exitButton)
+        addShadowToView(view: moreButton)
+        addShadowToView(view: titleLabel)
         
         // add image views
         setupImageViews()
@@ -92,28 +92,28 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
             
             // create imageview
             let imageView = UIImageView(image: photo.image)
-            imageView.contentMode = .ScaleAspectFill
+            imageView.contentMode = .scaleAspectFill
             subScrollView.addSubview(imageView)
             
             // add subScrollView constraints
             subScrollView.translatesAutoresizingMaskIntoConstraints = false
-            let attribute: NSLayoutAttribute = (x == 0) ? .Leading : .Trailing
-            scrollView.addConstraint(NSLayoutConstraint(item: subScrollView, attribute: .Leading, relatedBy: .Equal, toItem: previousView, attribute: attribute, multiplier: 1, constant: 0))
-            view.addConstraint(NSLayoutConstraint(item: subScrollView, attribute: .Top, relatedBy: .Equal, toItem: contentView, attribute: .Top, multiplier: 1, constant: 0))
-            view.addConstraint(NSLayoutConstraint(item: subScrollView, attribute: .Bottom, relatedBy: .Equal, toItem: contentView, attribute: .Bottom, multiplier: 1, constant: 0))
-            view.addConstraint(NSLayoutConstraint(item: subScrollView, attribute: .Width, relatedBy: .Equal, toItem: scrollView, attribute: .Width, multiplier: 1, constant: 0))
+            let attribute: NSLayoutAttribute = (x == 0) ? .leading : .trailing
+            scrollView.addConstraint(NSLayoutConstraint(item: subScrollView, attribute: .leading, relatedBy: .equal, toItem: previousView, attribute: attribute, multiplier: 1, constant: 0))
+            view.addConstraint(NSLayoutConstraint(item: subScrollView, attribute: .top, relatedBy: .equal, toItem: contentView, attribute: .top, multiplier: 1, constant: 0))
+            view.addConstraint(NSLayoutConstraint(item: subScrollView, attribute: .bottom, relatedBy: .equal, toItem: contentView, attribute: .bottom, multiplier: 1, constant: 0))
+            view.addConstraint(NSLayoutConstraint(item: subScrollView, attribute: .width, relatedBy: .equal, toItem: scrollView, attribute: .width, multiplier: 1, constant: 0))
             
             // add imageview constraints
             imageView.translatesAutoresizingMaskIntoConstraints = false
-            subScrollView.addConstraint(NSLayoutConstraint(item: imageView, attribute: .Width, relatedBy: .Equal, toItem: imageView, attribute: .Height, multiplier: (photo.image.size.width / photo.image.size.height), constant: 0))
-            subScrollView.addConstraint(NSLayoutConstraint(item: imageView, attribute: .CenterX, relatedBy: .Equal, toItem: subScrollView, attribute: .CenterX, multiplier: 1, constant: 0))
-            subScrollView.addConstraint(NSLayoutConstraint(item: imageView, attribute: .CenterY, relatedBy: .Equal, toItem: subScrollView, attribute: .CenterY, multiplier: 1, constant: 0))
+            subScrollView.addConstraint(NSLayoutConstraint(item: imageView, attribute: .width, relatedBy: .equal, toItem: imageView, attribute: .height, multiplier: (photo.image.size.width / photo.image.size.height), constant: 0))
+            subScrollView.addConstraint(NSLayoutConstraint(item: imageView, attribute: .centerX, relatedBy: .equal, toItem: subScrollView, attribute: .centerX, multiplier: 1, constant: 0))
+            subScrollView.addConstraint(NSLayoutConstraint(item: imageView, attribute: .centerY, relatedBy: .equal, toItem: subScrollView, attribute: .centerY, multiplier: 1, constant: 0))
 
             // add imageview side constraints
-            for attribute: NSLayoutAttribute in [.Top, .Bottom, .Leading, .Trailing] {
-                let constraintLowPriority = NSLayoutConstraint(item: imageView, attribute: attribute, relatedBy: .Equal, toItem: subScrollView, attribute: attribute, multiplier: 1, constant: 0)
-                let constraintGreaterThan = NSLayoutConstraint(item: imageView, attribute: attribute, relatedBy: .GreaterThanOrEqual, toItem: subScrollView, attribute: attribute, multiplier: 1, constant: 0)
-                constraintLowPriority.priority = 750
+            for attribute: NSLayoutAttribute in [.top, .bottom, .leading, .trailing] {
+                let constraintLowPriority = NSLayoutConstraint(item: imageView, attribute: attribute, relatedBy: .equal, toItem: subScrollView, attribute: attribute, multiplier: 1, constant: 0)
+                let constraintGreaterThan = NSLayoutConstraint(item: imageView, attribute: attribute, relatedBy: .greaterThanOrEqual, toItem: subScrollView, attribute: attribute, multiplier: 1, constant: 0)
+                constraintLowPriority.priority = UILayoutPriority(rawValue: 750)
                 subScrollView.addConstraints([constraintLowPriority,constraintGreaterThan])
             }
             
@@ -121,7 +121,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
             previousView = subScrollView
         }
         let xOffset = CGFloat(currentPhotoIndex) * scrollView.frame.size.width
-        scrollView.contentOffset = CGPointMake(xOffset, 0)
+        scrollView.contentOffset = CGPoint(x:xOffset, y:0)
     }
     
     // ensure scroll view has correct content size when the view size changes
@@ -129,40 +129,40 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         super.viewDidLayoutSubviews()
         contentWidthConstraint.constant = CGFloat(allPhotos.count) * scrollView.frame.size.width
         if !scrollViewDragging {
-            scrollView.contentOffset = CGPointMake(CGFloat(currentPhotoIndex) * scrollView.frame.size.width, 0)
+            scrollView.contentOffset = CGPoint(x: CGFloat(currentPhotoIndex) * scrollView.frame.size.width, y:0)
         }
     }
 
     // MARK: Styling Methods
     
     private func colourButton(button: UIButton){
-        let tintableImage = button.backgroundImageForState(.Normal)!.imageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate)
-        button.setBackgroundImage(tintableImage, forState: .Normal)
-        button.tintColor = UIColor.whiteColor()
+        let tintableImage = button.backgroundImage(for: .normal)!.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
+        button.setBackgroundImage(tintableImage, for: .normal)
+        button.tintColor = UIColor.white
     }
     
     private func addShadowToView(view: UIView){
         view.layer.masksToBounds = false
-        view.layer.shadowColor = UIColor.blackColor().CGColor
+        view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOpacity = 0.7
-        view.layer.shadowOffset = CGSizeMake(2.0, 2.0)
+        view.layer.shadowOffset = CGSize(width:2.0, height: 2.0)
     }
     
     // MARK: UIScrollViewDelegate
     
-    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         if scrollView == self.scrollView {
             scrollViewDragging = true
         }
     }
     
-    func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         if scrollView == self.scrollView {
             scrollViewDragging = false
         }
     }
     
-    func scrollViewDidScroll(scrollView: UIScrollView) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView == self.scrollView && scrollViewDragging {
             currentPhotoIndex = getCurrentPageIndex()
             updateTitle()
@@ -186,30 +186,30 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
     }
     
     @IBAction func backButtonSelected() {
-        galleryDelegate?.updateSelectedIndex(currentPhotoIndex)
-        dismissViewControllerAnimated(true, completion: nil)
+        galleryDelegate?.updateSelectedIndex(newIndex: currentPhotoIndex)
+        dismiss(animated: true, completion: nil)
     }
     
     // MARK: Status Bar
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         statusBarHidden = true
         setNeedsStatusBarAppearanceUpdate()
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         statusBarHidden = false
         setNeedsStatusBarAppearanceUpdate()
     }
     
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden : Bool {
         return statusBarHidden
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .Default
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return .default
     }
 }
 
@@ -221,21 +221,21 @@ extension PhotoViewController: ImageTransitionProtocol {
     func tranisitionSetup(){
         let photo = allPhotos[currentPhotoIndex]
         titleLabel.text = photo.title
-        scrollView.hidden = true
+        scrollView.isHidden = true
     }
     
     // 2; unhide images and set correct image to be showing
     func tranisitionCleanup(){
-        scrollView.hidden = false
+        scrollView.isHidden = false
         let xOffset = CGFloat(currentPhotoIndex) * scrollView.frame.size.width
-        scrollView.contentOffset = CGPointMake(xOffset, 0)
+        scrollView.contentOffset = CGPoint(x: xOffset, y: 0)
     }
     
     // 3: return the imageView window frame
     func imageWindowFrame() -> CGRect{
 
         let photo = allPhotos[currentPhotoIndex]
-        let scrollWindowFrame = scrollView.superview!.convertRect(scrollView.frame, toView: nil)
+        let scrollWindowFrame = scrollView.superview!.convert(scrollView.frame, to: nil)
         
         let scrollViewRatio = scrollView.frame.size.width / scrollView.frame.size.height
         let imageRatio = photo.image.size.width / photo.image.size.height
@@ -244,11 +244,11 @@ extension PhotoViewController: ImageTransitionProtocol {
         if touchesSides {
             let height = scrollWindowFrame.size.width / imageRatio
             let yPoint = scrollWindowFrame.origin.y + (scrollWindowFrame.size.height - height) / 2
-            return CGRectMake(scrollWindowFrame.origin.x, yPoint, scrollWindowFrame.size.width, height)
+            return CGRect(x: scrollWindowFrame.origin.x, y: yPoint, width: scrollWindowFrame.size.width, height: height)
         } else {
             let width = scrollWindowFrame.size.height * imageRatio
             let xPoint = scrollWindowFrame.origin.x + (scrollWindowFrame.size.width - width) / 2
-            return CGRectMake(xPoint, scrollWindowFrame.origin.y, width, scrollWindowFrame.size.height)
+            return CGRect(x: xPoint, y: scrollWindowFrame.origin.y, width: width, height: scrollWindowFrame.size.height)
         }
     }
 }

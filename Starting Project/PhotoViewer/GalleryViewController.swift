@@ -52,12 +52,12 @@ class GalleryViewController: UIViewController, UICollectionViewDelegate, UIColle
         collectionView.reloadData()
     }
     
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden : Bool {
         return false
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return .lightContent
     }
     
     // MARK: UICollectionViewDelegate, UICollectionViewDataSource
@@ -69,36 +69,35 @@ class GalleryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
         let itemsPerRow = floor(collectionView.frame.size.width / minimum)
         let width = (collectionView.frame.size.width - ((itemsPerRow - 1)*padding)) / itemsPerRow
-        return CGSizeMake(width, width)
+        return CGSize(width: width, height: width)
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ImageCell", forIndexPath: indexPath) as! ImageCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCell", for: indexPath as IndexPath) as! ImageCell
         let photo = allPhotos[indexPath.row]
         cell.imageView.image = photo.image
         return cell
     }
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return allPhotos.count
     }
     
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         selectedIndex = indexPath.row
-        performSegueWithIdentifier("FullScreenSegue", sender: nil)
+        performSegue(withIdentifier: "FullScreenSegue", sender: nil)
     }
     
-    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
         collectionView.collectionViewLayout.invalidateLayout()
     }
     
     // MARK: Segue Methods
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        let destination = segue.destinationViewController as! PhotoViewController
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destination = segue.destination as! PhotoViewController
         destination.galleryDelegate = self
-        destination.setupWithPhotos(allPhotos, selectedPhotoIndex: selectedIndex!)
+        destination.setupWithPhotos(photos: allPhotos, selectedPhotoIndex: selectedIndex!)
     }
 }
 
